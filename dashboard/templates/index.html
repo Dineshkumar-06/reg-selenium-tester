@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tester</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h2>Tester</h2>
+    <form id="myForm">
+        <table class="table container">
+            <tr>
+                <td>Application Identifier</td>
+                <td><input type="text" name='app_identifier' id='app_identifier' class="app_identifier" required></td>
+            </tr>
+
+            <tr>
+                <td>Excel File: </td>
+                <td> <input type="file" name='excel_file' id='excel_file' class="excel_file" required></td>
+            </tr>
+
+            <tr>
+                <td>Do you want to test single dropdowns? </td>
+                <td> 
+                    <input type="radio" name='test_single_dropdown' id='test_single_dropdown1' class="test_single_dropdown" value="Y" required>
+                    <label for="single_dropdown">Yes</label>
+                    <input type="radio" name='test_single_dropdown' id='test_single_dropdown2' class="test_single_dropdown"  value="N" required>
+                    <label for="dependent_dropdown">No</label>
+                </td>
+            </tr>
+            <tr>
+                <td>Do you want to test dependent dropdowns?</td>
+                <td> 
+                    <input type="radio" name='test_dependent_dropdown' id='test_dependent_dropdown1' class="test_dependent_dropdown" value="Y" required>
+                    <label for="single_dropdown">Yes</label>
+                    <input type="radio" name='test_dependent_dropdown' id='test_dependent_dropdown2' class="test_dependent_dropdown"  value="N" required>
+                    <label for="dependent_dropdown">No</label>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+
+                    <label id="note" style="display: none;">If the dependent dropdown values are separated by comma (,) in SOW, kindly use this <a href="#">document</a> for data preparation.</label>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Do you want to test the labels? </td>
+                <td> 
+                    <input type="radio" name='test_label' id='test_label1' class="test_label" value="Y" required>
+                    <label for="single_dropdown">Yes</label>
+                    <input type="radio" name='test_label' id='test_label2' class="test_label" value="N" required>
+                    <label for="dependent_dropdown">No</label>
+                </td>
+            </tr>
+            
+          </table>  
+        <button type="submit">Submit</button>
+    </form>
+
+    <div id="response"></div>
+
+    <script>
+
+        $(document).ready(function() {
+            $("input[name=test_dependent_dropdown]").change(function(e) {
+                e.preventDefault();
+
+                var test_dependent_dropdown = $("input[name=test_dependent_dropdown]:checked").val();
+
+                if (test_dependent_dropdown == "Y") {
+                    $("#note").show();
+                } else {
+                    $("#note").hide();
+                }
+
+            });
+        });
+
+        $(document).ready(function() {
+            $("#myForm").submit(function(e) {
+                e.preventDefault();
+                $("#response").html("<p style='color:black;'> Data sent for testing. Please wait... </p>");
+
+                var formData = new FormData();
+                formData.append('app_identifier', $('#app_identifier').val());
+                formData.append('excel_file', $('#excel_file')[0].files[0]);
+                formData.append('test_single_dropdown', $("input[name=test_single_dropdown]:checked").val());
+                formData.append('test_dependent_dropdown', $("input[name=test_dependent_dropdown]:checked").val());
+                formData.append('test_label', $("input[name=test_label]:checked").val());
+
+                $.ajax({
+                        url : '/process',
+                        type : 'POST',
+                        data : formData,
+                        contentType: false,
+                        processData: false,
+                        success : function (response) { 
+                            $("#response").html("<p style='color:green;'>" + response.message.join('<br>') + "</p>");
+
+                            $('#myForm')[0].reset();
+                        },
+                        error : function (xhr, status, error) { 
+                            $("#response").html("<p style='color:red;'>" + xhr.responseJSON.error.join('<br>') + "</p>");
+                        }
+
+                });
+
+
+                /* var dropdown_type = $("input[name=dropdown_type]:checked").val();
+
+                console.log(dropdown_type);
+
+                console.log("Hi")
+
+                if (dropdown_type == "single_dropdown") {
+
+                    console.log("Entered single dropdown ajax call");
+ 
+                    $.ajax({
+                        url : '/single_process',
+                        type : 'POST',
+                        data : formData,
+                        contentType: false,
+                        processData: false,
+                        success : function (response) { 
+                            $("#response").html("<p style='color:green;'>" + response.message.join('<br>') + "</p>");
+
+                            $('#myForm')[0].reset();
+                        },
+                        error : function (xhr, status, error) { 
+                            $("#response").html("<p style='color:red;'>" + xhr.responseJSON.error.join('<br>') + "</p>");
+                        }
+
+                    });
+
+                } else if (dropdown_type == "dependent_dropdown") {
+
+                    console.log("Entered dependent dropdown ajax call");
+                    
+                    $.ajax({
+                        url : '/dependent_process',
+                        type : 'POST',
+                        data : formData,
+                        contentType: false,
+                        processData: false,
+                        success : function (response) { 
+                            $("#response").html("<p style='color:green;'>" + response.message.join('<br>') + "</p>");
+
+                            $('#myForm')[0].reset();
+                        },
+                        error : function (xhr, status, error) { 
+                            $("#response").html("<p style='color:red;'>" + xhr.responseJSON.error.join('<br>') + "</p>");
+                        }
+
+                    });
+
+                }
+                else {
+                    console.log("Not entered anything!");
+                } */
+                
+
+            });
+
+        });
+
+    </script>
+
+</body>
+</html>
