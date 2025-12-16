@@ -1,8 +1,7 @@
+from automation.src.selenium_driver import get_driver
+from automation.src.config import DATA_JSON, DATA_DIR, REPORTS_DIR, LOGS_DIR
 
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
+from automation.src.functions import single_dropdown_checker
 
 from selenium.webdriver.support.ui import Select
 
@@ -17,10 +16,9 @@ import json
 
 import pandas as pd
 
-from functions import *
 
-json_file = open('data.json')
-data = json.load(json_file)
+with open(DATA_JSON, "r", encoding="utf-8") as f:
+    data = json.load(f)
 
 app_identifier = data['app_identifier'].strip()
 excel_file_name = data['excel_file_name'].strip()
@@ -32,20 +30,12 @@ print(url)
 print("Entered single_dropdown.py")
 
 
-folder_path = r"C:\Python files\automation_testing\flask\docs"
-data_path = os.path.join(folder_path, excel_file_name)
+data_path = DATA_DIR / excel_file_name
 
-service = Service(ChromeDriverManager().install())
 
-chrome_options = Options()
-
-chrome_options.add_argument("--headless")
-
-driver = webdriver.Chrome(service=service, options=chrome_options)
+driver = get_driver()
 
 driver.get(url)
-
-driver.maximize_window()
 
 ids = driver.find_elements(By.XPATH, '//*[@id]')
 
@@ -106,10 +96,8 @@ for i in actual_select_dict:
 
 driver.quit() 
 
-with open('single_dropdown_app.json', 'w', encoding='utf-8') as f:
-    json.dump(actual_select_dict, f, indent=4, ensure_ascii=False)
-
-
+with open(LOGS_DIR / "single_dropdown_app.json", "w", encoding="utf-8") as f:
+    json.dump(actual_select_dict, f, indent=4)
 ################################################################################################
 # print("#######################################################################################")
 
@@ -158,12 +146,12 @@ for i in expected_select_dict:
 #     print(count, count1)
 #     print("Mismatch!")
 
-with open('single_dropdown_excel.json', 'w', encoding='utf-8') as f:
-    json.dump(expected_select_dict, f, indent=4, ensure_ascii=False)
+with open(LOGS_DIR / "single_dropdown_excel.json", "w", encoding="utf-8") as f:
+    json.dump(expected_select_dict, f, indent=4)
+    
+res = single_dropdown_checker(actual_select_dict, expected_select_dict, "dropdown")
 
-res = compare_single_dropdown_values(actual_select_dict, expected_select_dict, "dropdown")
-
-with open("single_dropdown_output.txt", "w", encoding="utf-8") as file:
+with open(REPORTS_DIR / "single_dropdown_output.txt", "w", encoding="utf-8") as file:
     # for key, val in expected_select_dict.items():
     #     file.write(f"{key} => {val}\n")
     # for key, val in actual_select_dict.items():

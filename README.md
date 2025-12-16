@@ -29,3 +29,8 @@ A Python-based automation tool that extracts registration form related data from
 ```bash
 git clone https://github.com/yourusername/reg-selenium-tester.git
 cd reg-selenium-tester
+```
+
+## Tasks accomplished
+- I structured the automation engine as a proper Python package and executed scripts in module mode to ensure predictable imports across environments.
+

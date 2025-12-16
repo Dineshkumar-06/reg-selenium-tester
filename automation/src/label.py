@@ -1,44 +1,35 @@
 
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
+from automation.src.selenium_driver import get_driver
+from automation.src.config import DATA_JSON, DATA_DIR, REPORTS_DIR, LOGS_DIR
+
+from automation.src.functions import diff_texts_html
+
 from selenium.webdriver.common.by import By
 
 from selenium.common.exceptions import *
 
-import os
-import math, json
+import json
 
 import pandas as pd
 
-from difflib_report import *
-
-json_file = open('data.json')
-data = json.load(json_file)
+with open(DATA_JSON, "r", encoding="utf-8") as f:
+    data = json.load(f)
 
 app_identifier = data['app_identifier'].strip()
 excel_file_name = data['excel_file_name'].strip()
 
 # url = "https://regdemo.sifyitest.com/"+app_identifier+"/reg_details.php"
 # url = "https://demo.sifyitest.com/prithivi/"+app_identifier+"/reg_details.php"
-url = "https://staging.sifyreg.com/sakthi/"+app_identifier+"/reg_details.php"
+url = "https://staging.sifyreg.com/sanjana/"+app_identifier+"/reg_details.php"
 print(url)
 print("Entered label.py")
 
+data_path = DATA_DIR / excel_file_name
 
-folder_path = r"C:\Python files\automation_testing\flask\docs"
-data_path = os.path.join(folder_path, excel_file_name)
+output_html = REPORTS_DIR / "label_output.html"
 
-service = Service(ChromeDriverManager().install())
-# driver = webdriver.Chrome(service=service)
 
-chrome_options = Options()
-
-chrome_options.add_argument("--headless")
-
-driver = webdriver.Chrome(service=service, options=chrome_options)
-
+driver = get_driver()
 # driver.maximize_window()
 
 driver.get(url)
@@ -70,7 +61,7 @@ for field in fields:
 c = 1
 hc = 1
 
-with open("test_output.txt", "w", encoding="utf-8") as file:
+with open(LOGS_DIR / "label_app.txt", "w", encoding="utf-8") as file:
     for i in label_contents:
         file.write(f"{i}\n") 
         c += 1
@@ -108,13 +99,13 @@ for idx, row in data_frame.iterrows():
 # print(processed_labels)
 
 ce = 1
-with open("test_excel_op.txt", "w", encoding="utf-8") as file:
+with open(LOGS_DIR / "label_excel.txt", "w", encoding="utf-8") as file:
     for i in processed_labels:
         file.write(f"{i}\n") 
         ce += 1
     file.write(f"{ce}\n")
 
-diff_texts_html('test_excel_op.txt', 'test_output.txt')
+diff_texts_html(LOGS_DIR / "label_excel.txt", LOGS_DIR / "label_app.txt", output_html)
 
 # input("Press enter to quit the window...")
 driver.quit()

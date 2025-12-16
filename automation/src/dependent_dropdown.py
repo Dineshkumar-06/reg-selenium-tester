@@ -1,7 +1,7 @@
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
+from automation.src.selenium_driver import get_driver
+from automation.src.config import DATA_JSON, DATA_DIR, REPORTS_DIR, LOGS_DIR
+
+from automation.src.functions import dependent_dropdown_checker
 
 from selenium.webdriver.support.ui import Select
 
@@ -11,43 +11,30 @@ from selenium.webdriver.support import expected_conditions as EC
 
 from selenium.common.exceptions import *
 
-import time
+import time 
 import json 
-import os 
 
 import pandas as pd
 
-from functions import *
-
-import math, json
-
-json_file = open('data.json')
-data = json.load(json_file)
+with open(DATA_JSON, "r", encoding="utf-8") as f:
+    data = json.load(f)
 
 app_identifier = data['app_identifier'].strip()
 excel_file_name = data['excel_file_name'].strip()
 
 # url = "https://regdemo.sifyitest.com/"+app_identifier+"/reg_details.php"
 # url = "https://staging.sifyreg.com/pavithra/licnov25/reg_details.php?q=NjNlYzZhZGIwZTQxOTJjYzRkMDU5NDFkYWIxNTE1MjF8NzQ0MDAwMDAy"
-url = "https://staging.sifyreg.com/dinesha/"+app_identifier+"/reg_details.php"
+url = "https://staging.sifyreg.com/sanjana/"+app_identifier+"/reg_details.php"
 
 print(url)
-folder_path = r"C:\Python files\automation_testing\flask\docs"
-data_path = os.path.join(folder_path, excel_file_name)
 
-service = Service(ChromeDriverManager().install())
-# driver = webdriver.Chrome(service=service)
+data_path = DATA_DIR / excel_file_name
 
-chrome_options = Options()
 
-chrome_options.add_argument("--headless")
-
-driver = webdriver.Chrome(service=service, options=chrome_options)
+driver = get_driver()
 
 # driver.get('https://demo.sifyitest.com/kathirvelu/niclaomay25/reg_details.php') 
 driver.get(url)
-
-driver.maximize_window()
 
 
 selects_to_skip = ["day", "mon", "yr", "disability", "religion", "nationality"]
@@ -148,7 +135,7 @@ try:
     driver.refresh()
 except InvalidSessionIdException:
     print("Session expired, reinitializing driver...")
-    driver = webdriver.Chrome(service=service, options=chrome_options)
+    driver = get_driver()
     driver.get('https://demo.sifyitest.com/kathirvelu/niclaomay25/reg_details.php')
 
 print("###################################################################################")
@@ -257,16 +244,15 @@ for i in range(0, len(data_frame.columns) - 1, 2):
 print("excel dependency extracted!") 
 
 
-with open('dependency_mappings_excel.json', 'w', encoding='utf-8') as f:
+with open(LOGS_DIR / "dependency_dropdown_excel.json", "w", encoding="utf-8") as f:
     json.dump(expected_dependent_dicts, f, indent=4, ensure_ascii=False)
 
-with open('dependency_mappings_app.json', 'w', encoding='utf-8') as f:
+with open(LOGS_DIR / "dependency_dropdown_app.json", "w", encoding="utf-8") as f:
     json.dump(actual_dependent_dicts, f, indent=4, ensure_ascii=False)
-
 
 res = dependent_dropdown_checker(expected_dependent_dicts, actual_dependent_dicts)
 
-with open("dependent_dropdown_output.txt", "w", encoding="utf-8") as file:
+with open(REPORTS_DIR / "dependent_dropdown_output.txt", "w", encoding="utf-8") as f:
     for i in res:
-        file.write(f"{i}\n") 
+        f.write(f"{i}\n") 
     
