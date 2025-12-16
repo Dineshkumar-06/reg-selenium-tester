@@ -36,7 +36,6 @@ def single_dropdown_checker(actual_dict, expected_dict, type):
     return mismatches if len(mismatches) > 0 else [f"All {type} values matched by value and order."]
 
 
-
 def dependent_dropdown_checker(expected_dependent_dicts, actual_dependent_dicts):
     mismatches = []
 
@@ -53,8 +52,6 @@ def dependent_dropdown_checker(expected_dependent_dicts, actual_dependent_dicts)
         mismatches.append("The number of fields in application and excel mismatched. Please prepare the excel correctly!")
         return mismatches
     
-    # print(len(expected_outer_keys))
-    
 
     for outer_dict_index in range(0, len(expected_outer_keys)):
         expected_current_child = expected_outer_values[outer_dict_index]
@@ -65,11 +62,6 @@ def dependent_dropdown_checker(expected_dependent_dicts, actual_dependent_dicts)
 
         expected_current_values = list(expected_current_child.values())
         actual_current_values = list(actual_current_child.values())
-
-
-        # print(expected_current_keys)
-        # print("✅")
-        # print(actual_current_keys)
 
         if len(expected_current_keys) != len(actual_current_keys):
             mismatches.append(f"⚠️ Field {outer_dict_index} actual number of values is mismatching with expected!")
@@ -86,8 +78,6 @@ def dependent_dropdown_checker(expected_dependent_dicts, actual_dependent_dicts)
             except:
                 mismatches.append(f"Parent field values in excel is mismatching that of in the application.")
 
-            # mismatches.append(expected_inner_values)
-            # mismatches.append(actual_inner_values)
 
             # Testing for children option length
             if len(expected_inner_values) != len(actual_inner_values):
@@ -104,13 +94,8 @@ def dependent_dropdown_checker(expected_dependent_dicts, actual_dependent_dicts)
                     if expected != actual:
                         mismatches.append(f"🔥For Parent {outer_dict_index + 1}:\n❓For {key}:\n Mismatch at position {list_index}: expected '{expected}' vs actual '{actual}'\n")
 
-                # mismatches.append(f"\nExpected:{expected_inner_values} is not equal to Actual: {actual_inner_values}")
-
-            
-
-        # mismatches.append(f"Dropdown {outer_dict_index} done\n")
-
     return mismatches if len(mismatches) > 0 else [f"All dependent dropdown values matched by value and order."]
+
 
 def diff_texts_html(file1_path, file2_path, output_html):
     with open(file1_path, 'r', encoding='utf-8') as f1, open(file2_path, 'r', encoding='utf-8') as f2:
@@ -180,8 +165,6 @@ def diff_texts_html(file1_path, file2_path, output_html):
     </style>
     '''
     html_diff = html_diff.replace('<head>', '<head>' + style_insert)
-
-    # Generate side-by-side HTML diff
 
     # Write to output file
     with open(output_html, 'w' , encoding='utf-8') as f_out:
