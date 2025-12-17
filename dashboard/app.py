@@ -1,5 +1,7 @@
 import json
 import subprocess
+from pathlib import Path
+
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import os 
@@ -7,9 +9,12 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-path = r"C:\Python files\automation_testing\flask\docs"
+BASE_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = BASE_DIR.parent
+AUTOMATION_DATA_DIR = PROJECT_ROOT / "automation" / "data"
+AUTOMATION_DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-json_data_file = "data.json"
+DATA_JSON = AUTOMATION_DATA_DIR / "data.json"
 
 @app.route('/')
 def index():
@@ -22,7 +27,6 @@ def process():
     test_single_dropdown = request.form.get('test_single_dropdown')
     test_dependent_dropdown = request.form.get('test_dependent_dropdown')
     test_label = request.form.get('test_label')
-    # print("Form keys:", request.form.keys())
 
     messages = []
     status = "success"
@@ -37,7 +41,8 @@ def process():
 
     if excel_file:
         filename = excel_file.filename
-        excel_file.save(os.path.join(path, filename))
+        excel_path = AUTOMATION_DATA_DIR / filename
+        excel_file.save(excel_path)
         messages.append("Data saved successfully!")
     else:
         messages.append("Failed")
@@ -56,91 +61,26 @@ def process():
         "test_label": test_label,
     }
 
-    with open(json_data_file, "w") as file:
+    with open(DATA_JSON, "w") as file:
         json.dump(new_data, file, indent=4)
 
     print("data.json saved successfully!")
-    
-    if test_single_dropdown == "Y":
-        try:
-            subprocess.run(['python', 'single_dropdown.py'], check=True)
-            print("single dropdown tested successfully!")
-            messages.append("Single dropdown testing completed successfully!") 
-        except Exception as e:
-            messages.append(str(e)) 
-            status = "error"
-        
-    if test_dependent_dropdown == "Y":
-        try:
-            subprocess.run(['python', 'dependent_dropdown.py'], check=True)
-            print("Dependent dropdown tested successfully!")
-            messages.append("Dependent dropdown testing completed successfully!") 
-        except Exception as e:
-            messages.append(str(e)) 
-            status = "error"
-        
-    if test_label == "Y":
-        try:
-            subprocess.run(['python', 'label.py'], check=True)
-            print("Labels tested successfully!")
-            messages.append("Labels testing completed successfully!") 
-        except Exception as e:
-            messages.append(str(e)) 
-            status = "error"
+
+    try:
+        subprocess.run(
+            ["python", "-m", "automation.src.main"],
+            cwd=PROJECT_ROOT,
+            check=True
+        )
+        messages.append("Automation testing completed successfully!")
+    except subprocess.CalledProcessError as e:
+        messages.append(f"Automation failed! {e}")
+        status = "error"
     
     return jsonify({
     "status": status,
     "message": messages
     })
-
-    
-
-""" @app.route('/dependent_process', methods=['POST'])
-def dependent_process():
-    app_identifier = request.form.get('app_identifier')
-    excel_file = request.files.get('excel_file')
-
-
-    messages = []
-
-    if not app_identifier or not excel_file:
-        messages.append("Upload all the required details!")
-        return jsonify({
-            'status': 'error',
-            'message': messages 
-        }), 400
-
-    if excel_file:
-        filename = excel_file.filename
-        excel_file.save(os.path.join(path, filename))
-        messages.append("Data saved successfully!")
-    else:
-        messages.append("Failed")
-        return jsonify({
-            'status': 'error',
-            'message': messages 
-        }), 400 
-    
-    new_data = {"app_identifier": app_identifier, "excel_file_name": filename,}
-
-    with open(json_data_file, "w") as file:
-        json.dump(new_data, file, indent=4)
-
-    
-    try:
-        subprocess.run(['python', 'dependent_dropdown.py'], check=True)
-        messages.append("Script executed successfully!") 
-        return jsonify({
-            'status': 'success',
-            'message': messages 
-        })
-    except Exception as e:
-        messages.append(str(e)) 
-        return jsonify({
-            'status': 'error',
-            'message': messages 
-        }), 500 """
-
 
 if __name__ == '__main__':
     app.run(debug=True)

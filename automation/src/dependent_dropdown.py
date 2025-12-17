@@ -158,9 +158,8 @@ def run_dependent_dropdown():
     driver.quit()
     print("app dependency extracted!") 
 
-    with open(LOGS_DIR / "dependency_dropdown_excel.json", "w", encoding="utf-8") as f:
-        json.dump(expected_dependent_dicts, f, indent=4, ensure_ascii=False)
-
+    with open(LOGS_DIR / "dependency_dropdown_app.json", "w", encoding="utf-8") as f:
+        json.dump(actual_dependent_dicts, f, indent=4, ensure_ascii=False)
 
     # Extract the dependent dropdown data from the input excel file
     data_frame = pd.read_excel(data_path, sheet_name="dependent_dropdown")
@@ -200,8 +199,8 @@ def run_dependent_dropdown():
 
     print("excel dependency extracted!") 
 
-    with open(LOGS_DIR / "dependency_dropdown_app.json", "w", encoding="utf-8") as f:
-        json.dump(actual_dependent_dicts, f, indent=4, ensure_ascii=False)
+    with open(LOGS_DIR / "dependency_dropdown_excel.json", "w", encoding="utf-8") as f:
+        json.dump(expected_dependent_dicts, f, indent=4, ensure_ascii=False)
 
     # Invoking the comparison function
     res = dependent_dropdown_checker(expected_dependent_dicts, actual_dependent_dicts)
