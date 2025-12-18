@@ -31,6 +31,9 @@ def run_dependent_dropdown():
 
     driver.get(url)
 
+    # Check whether the URL is valid
+    if "404" in driver.title.lower():
+        raise RuntimeError("Application URL returned 404 page")
 
     # Extract the dependent dropdown data from the application
     selects_to_skip = ["day", "mon", "yr", "disability", "religion", "nationality"]

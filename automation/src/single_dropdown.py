@@ -30,6 +30,10 @@ def run_single_dropdown():
 
     driver.get(url)
 
+    # Check whether the URL is valid
+    if "404" in driver.title.lower():
+        raise RuntimeError("Application URL returned 404 page")
+
     # Extract the single dropdown data from the application
     ids = driver.find_elements(By.XPATH, '//*[@id]')
 

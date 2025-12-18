@@ -97,71 +97,37 @@
                         data : formData,
                         contentType: false,
                         processData: false,
-                        success : function (response) { 
-                            $("#response").html("<p style='color:green;'>" + response.message.join('<br>') + "</p>");
+                        success: function (response) {
 
-                            $('#myForm')[0].reset();
+                            if (response.status === "success") {
+                                $("#response").html(
+                                    "<p style='color:green;'>" +
+                                    response.messages.join("<br>") +
+                                    "</p>"
+                                );
+                                $('#myForm')[0].reset();
+                            }
+                            else if (response.status === "error") {
+                                $("#response").html(
+                                    "<p style='color:red;'>" +
+                                    response.messages.join("<br>") +
+                                    "</p>"
+                                );
+                            }
+                            else {
+                                $("#response").html(
+                                    "<p style='color:orange;'>Unknown response from server</p>"
+                                );
+                            }
                         },
-                        error : function (xhr, status, error) { 
-                            $("#response").html("<p style='color:red;'>" + xhr.responseJSON.error.join('<br>') + "</p>");
+
+                        error: function () {
+                            $("#response").html(
+                                "<p style='color:red;'>Server error. Please contact admin.</p>"
+                            );
                         }
 
-                });
-
-
-                /* var dropdown_type = $("input[name=dropdown_type]:checked").val();
-
-                console.log(dropdown_type);
-
-                console.log("Hi")
-
-                if (dropdown_type == "single_dropdown") {
-
-                    console.log("Entered single dropdown ajax call");
- 
-                    $.ajax({
-                        url : '/single_process',
-                        type : 'POST',
-                        data : formData,
-                        contentType: false,
-                        processData: false,
-                        success : function (response) { 
-                            $("#response").html("<p style='color:green;'>" + response.message.join('<br>') + "</p>");
-
-                            $('#myForm')[0].reset();
-                        },
-                        error : function (xhr, status, error) { 
-                            $("#response").html("<p style='color:red;'>" + xhr.responseJSON.error.join('<br>') + "</p>");
-                        }
-
-                    });
-
-                } else if (dropdown_type == "dependent_dropdown") {
-
-                    console.log("Entered dependent dropdown ajax call");
-                    
-                    $.ajax({
-                        url : '/dependent_process',
-                        type : 'POST',
-                        data : formData,
-                        contentType: false,
-                        processData: false,
-                        success : function (response) { 
-                            $("#response").html("<p style='color:green;'>" + response.message.join('<br>') + "</p>");
-
-                            $('#myForm')[0].reset();
-                        },
-                        error : function (xhr, status, error) { 
-                            $("#response").html("<p style='color:red;'>" + xhr.responseJSON.error.join('<br>') + "</p>");
-                        }
-
-                    });
-
-                }
-                else {
-                    console.log("Not entered anything!");
-                } */
-                
+                });               
 
             });
 

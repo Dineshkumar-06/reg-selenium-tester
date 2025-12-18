@@ -4,7 +4,6 @@ from pathlib import Path
 
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
-import os 
 
 app = Flask(__name__)
 CORS(app)
@@ -28,28 +27,25 @@ def process():
     test_dependent_dropdown = request.form.get('test_dependent_dropdown')
     test_label = request.form.get('test_label')
 
-    messages = []
-    status = "success"
-
+    response = {
+        "status": "started",
+        "messages": []
+    }
+    
     if not app_identifier or not excel_file or not test_single_dropdown or not test_dependent_dropdown or not test_label:
-        messages.append("Upload all the required details!")
-        return jsonify({
-            'status': 'error',
-            'message': messages 
-        }), 400
-
+        response["status"] = "error"
+        response["messages"].append("Upload all the required details!")
+        return jsonify(response), 200
 
     if excel_file:
         filename = excel_file.filename
         excel_path = AUTOMATION_DATA_DIR / filename
         excel_file.save(excel_path)
-        messages.append("Data saved successfully!")
+        response["messages"].append("Data saved successfully!")
     else:
-        messages.append("Failed")
-        return jsonify({
-            'status': 'error',
-            'message': messages 
-        }), 400 
+        response["messages"].append("Failed to save the excel file!")
+        response["status"] = "error"
+        return jsonify(response), 200
     
     print("Data saved successfully!")
     
@@ -67,20 +63,32 @@ def process():
     print("data.json saved successfully!")
 
     try:
-        subprocess.run(
+        result = subprocess.run(
             ["python", "-m", "automation.src.main"],
             cwd=PROJECT_ROOT,
-            check=True
+            capture_output=True,
+            text=True
         )
-        messages.append("Automation testing completed successfully!")
-    except subprocess.CalledProcessError as e:
-        messages.append(f"Automation failed! {e}")
-        status = "error"
-    
-    return jsonify({
-    "status": status,
-    "message": messages
-    })
+
+        if result.returncode == 0:
+            response["status"] = "success"
+            response["messages"].append("Automation completed successfully")
+        else:
+            response["status"] = "error"
+            response["messages"].append("Automation testing failed")
+
+            if result.stderr:
+                last_line = result.stderr.strip().splitlines()[-1]
+                response["messages"].append(last_line)
+            else:
+                response["messages"].append("Unknown error occurred")
+
+    except Exception as e:
+        response["status"] = "error"
+        response["messages"].append("Unexpected server error")
+        response["messages"].append(str(e))
+
+    return jsonify(response), 200
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -29,6 +29,10 @@ def run_label():
 
     driver.get(url)
 
+    # Check whether the URL is valid
+    if "404" in driver.title.lower():
+        raise RuntimeError("Application URL returned 404 page")
+
     fields = driver.find_elements(By.CLASS_NAME, "form-group")
 
     exception_list = []
