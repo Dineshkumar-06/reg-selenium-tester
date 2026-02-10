@@ -14,16 +14,16 @@ def run_label():
         data = json.load(f)
 
     app_identifier = data['app_identifier'].strip()
+    dev_name = data['dev_name'].strip()
     excel_file_name = data['excel_file_name'].strip()
 
-    url = "https://staging.sifyreg.com/sanjana/"+app_identifier+"/reg_details.php"
+    url = "https://staging.sifyreg.com/"+dev_name+"/"+app_identifier+"/reg_details.php"
     print(url)
     print("Entered label.py")
 
     data_path = DATA_DIR / excel_file_name
 
-    output_html = REPORTS_DIR / "label_output.html"
-
+    output_html = REPORTS_DIR / f"{app_identifier}_label_output.html"
 
     driver = get_driver()
 
@@ -75,7 +75,7 @@ def run_label():
         if (pd.notna(label) and str(label).strip() != "") and (pd.notna(mandatory) and str(mandatory).strip() != ""):
             label_str = str(label).strip().replace(" ", "")
             mandatory_str = str(mandatory).strip().lower() if pd.notna(mandatory) else ""
-            if mandatory_str == 'yes':
+            if mandatory_str == 'yes' and label_str[-1] != "*":
                 label_str += '*'
             
             processed_labels.append(label_str)

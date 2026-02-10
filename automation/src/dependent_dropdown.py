@@ -18,9 +18,10 @@ def run_dependent_dropdown():
         data = json.load(f)
 
     app_identifier = data['app_identifier'].strip()
+    dev_name = data['dev_name'].strip()
     excel_file_name = data['excel_file_name'].strip()
 
-    url = "https://staging.sifyreg.com/sanjana/"+app_identifier+"/reg_details.php"
+    url = "https://staging.sifyreg.com/"+dev_name+"/"+app_identifier+"/reg_details.php"
 
     print(url)
 

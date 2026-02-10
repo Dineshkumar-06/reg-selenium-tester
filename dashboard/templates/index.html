@@ -14,6 +14,11 @@
                 <td>Application Identifier</td>
                 <td><input type="text" name='app_identifier' id='app_identifier' class="app_identifier" required></td>
             </tr>
+            
+            <tr>
+                <td>Developer Name (As in Repo name):</td>
+                <td><input type="text" name='dev_name' id='dev_name' class="dev_name" required></td>
+            </tr>
 
             <tr>
                 <td>Excel File: </td>
@@ -61,6 +66,7 @@
     </form>
 
     <div id="response"></div>
+    <p id="downloadReport1" style="display:none;">Label check report: <a id="downloadReport" href="#" >Download here</a></p>
 
     <script>
 
@@ -86,6 +92,7 @@
 
                 var formData = new FormData();
                 formData.append('app_identifier', $('#app_identifier').val());
+                formData.append('dev_name', $('#dev_name').val());
                 formData.append('excel_file', $('#excel_file')[0].files[0]);
                 formData.append('test_single_dropdown', $("input[name=test_single_dropdown]:checked").val());
                 formData.append('test_dependent_dropdown', $("input[name=test_dependent_dropdown]:checked").val());
@@ -106,6 +113,13 @@
                                     "</p>"
                                 );
                                 $('#myForm')[0].reset();
+                                // show download button if backend returned a report URL
+                                if (response.report_url) {
+                                    $('#downloadReport').attr('href', response.report_url);
+                                    $('#downloadReport1').show();
+                                } else {
+                                    $('#downloadReport1').hide();
+                                }
                             }
                             else if (response.status === "error") {
                                 $("#response").html(
@@ -113,6 +127,7 @@
                                     response.messages.join("<br>") +
                                     "</p>"
                                 );
+                                $('#downloadReport1').hide();
                             }
                             else {
                                 $("#response").html(
