@@ -77,18 +77,30 @@ def process():
             ["python", "-m", "automation.src.main"],
             cwd=PROJECT_ROOT,
             capture_output=True,
-            text=True
+            text=True,
+            encoding='utf-8', 
+            errors='ignore'
         )
 
         if result.returncode == 0:
             response["status"] = "success"
             response["messages"].append("Automation completed successfully")
-            # Attempt to locate the most recent HTML report and return its URL
+            # Attempt to locate reports with the app_identifier in their name
             try:
-                reports = sorted(REPORTS_DIR.glob("*.html"), key=lambda p: p.stat().st_mtime, reverse=True)
-                if reports:
-                    latest = reports[0]
-                    response["report_url"] = url_for('download_report', filename=latest.name)
+                # Look for label report
+                label_reports = list(REPORTS_DIR.glob(f"{app_identifier}_label_output.html"))
+                if label_reports:
+                    response["report_url"] = url_for('download_report', filename=label_reports[0].name)
+                
+                # Look for single dropdown report (txt file)
+                single_dropdown_reports = list(REPORTS_DIR.glob(f"{app_identifier}_single_dropdown_output.txt"))
+                if single_dropdown_reports:
+                    response["report_url_single_dropdown"] = url_for('download_report', filename=single_dropdown_reports[0].name)
+                
+                # Look for dependent dropdown report (txt file)
+                dependent_dropdown_reports = list(REPORTS_DIR.glob(f"{app_identifier}_dependent_dropdown_output.txt"))
+                if dependent_dropdown_reports:
+                    response["report_url_dependent_dropdown"] = url_for('download_report', filename=dependent_dropdown_reports[0].name)
             except Exception:
                 pass
         else:

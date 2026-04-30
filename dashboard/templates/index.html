@@ -3,92 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tester</title>
+    <title>Regression Selenium Tester</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-    <h2>Tester</h2>
-    <form id="myForm">
-        <table class="table container">
-            <tr>
-                <td>Application Identifier</td>
-                <td><input type="text" name='app_identifier' id='app_identifier' class="app_identifier" required></td>
-            </tr>
+    <div class="container">
+        <div class="header">
+            <h1>DeepCheck</h1>
+            <p>Automated Testing Tool for Label and Dropdown Validation</p>
+        </div>
+        
+        <div class="form-wrapper">
+            <form id="myForm">
+                <div class="form-group">
+                    <label for="app_identifier">Application Identifier</label>
+                    <input type="text" name='app_identifier' id='app_identifier' placeholder="e.g., bmcsimar26" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="dev_name">Developer Name (As in Repo name)</label>
+                    <input type="text" name='dev_name' id='dev_name' placeholder="Enter developer name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="excel_file">Excel File</label>
+                    <input type="file" name='excel_file' id='excel_file' accept=".xlsx,.xls" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Test Single Dropdowns?</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" name='test_single_dropdown' id='test_single_dropdown1' value="Y" required>
+                            <label for="test_single_dropdown1">Yes</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name='test_single_dropdown' id='test_single_dropdown2' value="N" required>
+                            <label for="test_single_dropdown2">No</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Test Dependent Dropdowns?</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" name='test_dependent_dropdown' id='test_dependent_dropdown1' value="Y" required>
+                            <label for="test_dependent_dropdown1">Yes</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name='test_dependent_dropdown' id='test_dependent_dropdown2' value="N" required>
+                            <label for="test_dependent_dropdown2">No</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="note" class="form-group note-section">
+                    ⓘ If the dependent dropdown values are separated by comma (,) in SOW, kindly use this <a href="#">data preparation guide</a> for proper formatting.
+                </div>
+
+                <div class="form-group">
+                    <label>Test the Labels?</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" name='test_label' id='test_label1' value="Y" required>
+                            <label for="test_label1">Yes</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name='test_label' id='test_label2' value="N" required>
+                            <label for="test_label2">No</label>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn">Start Testing</button>
+            </form>
+        </div>
+
+        <div class="response-wrapper">
+            <div id="response"></div>
             
-            <tr>
-                <td>Developer Name (As in Repo name):</td>
-                <td><input type="text" name='dev_name' id='dev_name' class="dev_name" required></td>
-            </tr>
-
-            <tr>
-                <td>Excel File: </td>
-                <td> <input type="file" name='excel_file' id='excel_file' class="excel_file" required></td>
-            </tr>
-
-            <tr>
-                <td>Do you want to test single dropdowns? </td>
-                <td> 
-                    <input type="radio" name='test_single_dropdown' id='test_single_dropdown1' class="test_single_dropdown" value="Y" required>
-                    <label for="single_dropdown">Yes</label>
-                    <input type="radio" name='test_single_dropdown' id='test_single_dropdown2' class="test_single_dropdown"  value="N" required>
-                    <label for="dependent_dropdown">No</label>
-                </td>
-            </tr>
-            <tr>
-                <td>Do you want to test dependent dropdowns?</td>
-                <td> 
-                    <input type="radio" name='test_dependent_dropdown' id='test_dependent_dropdown1' class="test_dependent_dropdown" value="Y" required>
-                    <label for="single_dropdown">Yes</label>
-                    <input type="radio" name='test_dependent_dropdown' id='test_dependent_dropdown2' class="test_dependent_dropdown"  value="N" required>
-                    <label for="dependent_dropdown">No</label>
-                </td>
-            </tr>
-            <tr>
-                <td></td>
-                <td>
-
-                    <label id="note" style="display: none;">If the dependent dropdown values are separated by comma (,) in SOW, kindly use this <a href="#">document</a> for data preparation.</label>
-                </td>
-            </tr>
-
-            <tr>
-                <td>Do you want to test the labels? </td>
-                <td> 
-                    <input type="radio" name='test_label' id='test_label1' class="test_label" value="Y" required>
-                    <label for="single_dropdown">Yes</label>
-                    <input type="radio" name='test_label' id='test_label2' class="test_label" value="N" required>
-                    <label for="dependent_dropdown">No</label>
-                </td>
-            </tr>
-            
-          </table>  
-        <button type="submit">Submit</button>
-    </form>
-
-    <div id="response"></div>
-    <p id="downloadReport1" style="display:none;">Label check report: <a id="downloadReport" href="#" >Download here</a></p>
+            <div class="report-links">
+                <div id="downloadReport1" class="report-link">
+                    📄 <strong>Label Check Report:</strong> <a id="downloadReport" href="#">Download here</a>
+                </div>
+                <div id="downloadReport2" class="report-link">
+                    📄 <strong>Single Dropdown Report:</strong> <a id="downloadReportSingleDropdown" href="#">Download here</a>
+                </div>
+                <div id="downloadReport3" class="report-link">
+                    📄 <strong>Dependent Dropdown Report:</strong> <a id="downloadReportDependentDropdown" href="#">Download here</a>
+                </div>
+        </div>
+    </div>
 
     <script>
-
         $(document).ready(function() {
             $("input[name=test_dependent_dropdown]").change(function(e) {
                 e.preventDefault();
-
                 var test_dependent_dropdown = $("input[name=test_dependent_dropdown]:checked").val();
-
                 if (test_dependent_dropdown == "Y") {
                     $("#note").show();
                 } else {
                     $("#note").hide();
                 }
-
             });
         });
 
         $(document).ready(function() {
             $("#myForm").submit(function(e) {
                 e.preventDefault();
-                $("#response").html("<p style='color:black;'> Data sent for testing. Please wait... </p>");
+                $("#response").html("<p style='color:black; font-weight: 600;'>⏳ Data sent for testing. Please wait...</p>");
+                $('#downloadReport1').hide();
+                $('#downloadReport2').hide();
+                $('#downloadReport3').hide();
 
                 var formData = new FormData();
                 formData.append('app_identifier', $('#app_identifier').val());
@@ -99,56 +127,60 @@
                 formData.append('test_label', $("input[name=test_label]:checked").val());
 
                 $.ajax({
-                        url : '/process',
-                        type : 'POST',
-                        data : formData,
-                        contentType: false,
-                        processData: false,
-                        success: function (response) {
-
-                            if (response.status === "success") {
-                                $("#response").html(
-                                    "<p style='color:green;'>" +
-                                    response.messages.join("<br>") +
-                                    "</p>"
-                                );
-                                $('#myForm')[0].reset();
-                                // show download button if backend returned a report URL
-                                if (response.report_url) {
-                                    $('#downloadReport').attr('href', response.report_url);
-                                    $('#downloadReport1').show();
-                                } else {
-                                    $('#downloadReport1').hide();
-                                }
-                            }
-                            else if (response.status === "error") {
-                                $("#response").html(
-                                    "<p style='color:red;'>" +
-                                    response.messages.join("<br>") +
-                                    "</p>"
-                                );
-                                $('#downloadReport1').hide();
-                            }
-                            else {
-                                $("#response").html(
-                                    "<p style='color:orange;'>Unknown response from server</p>"
-                                );
-                            }
-                        },
-
-                        error: function () {
+                    url: '/process',
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (response) {
+                        if (response.status === "success") {
                             $("#response").html(
-                                "<p style='color:red;'>Server error. Please contact admin.</p>"
+                                "<div style='color: #2d5016; background-color: #d4edda; padding: 15px; border-radius: 5px; border-left: 4px solid #28a745;'>" +
+                                "<strong style='display: block; margin-bottom: 8px;'>✓ Success!</strong>" +
+                                response.messages.join("<br>") +
+                                "</div>"
+                            );
+                            $('#myForm')[0].reset();
+                            
+                            if (response.report_url) {
+                                $('#downloadReport').attr('href', response.report_url);
+                                $('#downloadReport1').show();
+                            }
+                            if (response.report_url_single_dropdown) {
+                                $('#downloadReportSingleDropdown').attr('href', response.report_url_single_dropdown);
+                                $('#downloadReport2').show();
+                            }
+                            if (response.report_url_dependent_dropdown) {
+                                $('#downloadReportDependentDropdown').attr('href', response.report_url_dependent_dropdown);
+                                $('#downloadReport3').show();
+                            }
+                        }
+                        else if (response.status === "error") {
+                            $("#response").html(
+                                "<div style='color: #721c24; background-color: #f8d7da; padding: 15px; border-radius: 5px; border-left: 4px solid #f5c6cb;'>" +
+                                "<strong style='display: block; margin-bottom: 8px;'>✗ Error!</strong>" +
+                                response.messages.join("<br>") +
+                                "</div>"
                             );
                         }
-
-                });               
-
+                        else {
+                            $("#response").html(
+                                "<div style='color: #856404; background-color: #fff3cd; padding: 15px; border-radius: 5px; border-left: 4px solid #ffc107;'>" +
+                                "<strong>⚠ Unknown Response</strong><br>Unknown response from server" +
+                                "</div>"
+                            );
+                        }
+                    },
+                    error: function () {
+                        $("#response").html(
+                            "<div style='color: #721c24; background-color: #f8d7da; padding: 15px; border-radius: 5px; border-left: 4px solid #f5c6cb;'>" +
+                            "<strong>✗ Server Error</strong><br>Server error. Please contact admin." +
+                            "</div>"
+                        );
+                    }
+                });
             });
-
         });
-
     </script>
-
 </body>
 </html>
