@@ -116,7 +116,7 @@ def run_single_dropdown():
     # Invoking the comparison function
     res = single_dropdown_checker(actual_select_dict, expected_select_dict, "dropdown")
 
-    with open(REPORTS_DIR / "single_dropdown_output.txt", "w", encoding="utf-8") as file:
+    with open(REPORTS_DIR / f"{app_identifier}_single_dropdown_output.txt", "w", encoding="utf-8") as file:
         for i in res:
             file.write(f"{i}\n")
 

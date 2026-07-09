@@ -3,3 +3,4 @@ __pycache__/
 *.pyc
 automation/outputs/
 .env
+automation/data/

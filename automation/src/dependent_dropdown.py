@@ -1,5 +1,6 @@
 import json
 import time
+import sys
 
 import pandas as pd
 from selenium.common.exceptions import *
@@ -14,6 +15,7 @@ from automation.src.selenium_driver import get_driver
 
 
 def run_dependent_dropdown():
+    sys.stdout.reconfigure(encoding='utf-8')
     with open(DATA_JSON, "r", encoding="utf-8") as f:
         data = json.load(f)
 
@@ -48,7 +50,7 @@ def run_dependent_dropdown():
     for i, parent_id in enumerate(select_ids):
         temp = []
 
-        print(f"\n📌 Checking parent dropdown: {parent_id}")
+        print(f"\n📌Checking parent dropdown: {parent_id}")
 
         parent_element = driver.find_element(By.ID, parent_id)
         parent_select = Select(parent_element)
@@ -209,7 +211,7 @@ def run_dependent_dropdown():
     # Invoking the comparison function
     res = dependent_dropdown_checker(expected_dependent_dicts, actual_dependent_dicts)
 
-    with open(REPORTS_DIR / "dependent_dropdown_output.txt", "w", encoding="utf-8") as f:
+    with open(REPORTS_DIR / f"{app_identifier}_dependent_dropdown_output.txt", "w", encoding="utf-8") as f:
         for i in res:
             f.write(f"{i}\n") 
         
