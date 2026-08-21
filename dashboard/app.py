@@ -1,5 +1,8 @@
 import json
+import os
 import subprocess
+import sys
+import threading
 from pathlib import Path
 
 from flask import Flask, request, jsonify, render_template, send_from_directory, url_for
@@ -18,6 +21,42 @@ DATA_JSON = AUTOMATION_DATA_DIR / "data.json"
 # Reports directory (serve generated reports from here)
 REPORTS_DIR = PROJECT_ROOT / "automation" / "outputs" / "reports"
 REPORTS_DIR.mkdir(parents=True, exist_ok=True)
+
+# Shuts the server down shortly after the last browser tab disappears.
+# A page refresh also fires the "shutdown" beacon, but the new page's
+# heartbeat arrives well within the grace period and cancels it.
+SHUTDOWN_GRACE_SECONDS = 2.0
+_shutdown_timer = None
+_shutdown_lock = threading.Lock()
+
+
+def _stop_server():
+    print("No active browser tab detected. Shutting down server...")
+    sys.stdout.flush()
+    os._exit(0)
+
+
+@app.route('/heartbeat', methods=['POST'])
+def heartbeat():
+    global _shutdown_timer
+    with _shutdown_lock:
+        if _shutdown_timer is not None:
+            _shutdown_timer.cancel()
+            _shutdown_timer = None
+    return '', 204
+
+
+@app.route('/shutdown', methods=['POST'])
+def shutdown():
+    global _shutdown_timer
+    with _shutdown_lock:
+        if _shutdown_timer is not None:
+            _shutdown_timer.cancel()
+        _shutdown_timer = threading.Timer(SHUTDOWN_GRACE_SECONDS, _stop_server)
+        _shutdown_timer.daemon = True
+        _shutdown_timer.start()
+    return '', 204
+
 
 @app.route('/')
 def index():
@@ -121,6 +160,6 @@ def process():
     return jsonify(response), 200
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, use_reloader=False)
 
 

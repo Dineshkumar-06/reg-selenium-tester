@@ -98,6 +98,18 @@
     </div>
 
     <script>
+        // Keeps the local server alive while this tab is open, and lets it
+        // shut itself down shortly after the tab is closed. A page refresh
+        // also triggers the unload beacon, but the reloaded page's next
+        // heartbeat cancels the pending shutdown before it fires.
+        setInterval(function() {
+            navigator.sendBeacon('/heartbeat');
+        }, 1000);
+
+        window.addEventListener('beforeunload', function() {
+            navigator.sendBeacon('/shutdown');
+        });
+
         $(document).ready(function() {
             $("input[name=test_dependent_dropdown]").change(function(e) {
                 e.preventDefault();
