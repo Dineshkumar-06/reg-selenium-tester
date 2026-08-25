@@ -113,7 +113,7 @@ def process():
 
     try:
         result = subprocess.run(
-            ["python", "-m", "automation.src.main"],
+            [sys.executable, "-m", "automation.src.main"],
             cwd=PROJECT_ROOT,
             capture_output=True,
             text=True,
